@@ -54,4 +54,9 @@ public class Kisi implements Serializable {
     public void setMail(String mail) {
         this.mail = mail;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", ad.substring(0, 1).toUpperCase() + ad.substring(1).toLowerCase(), soyad.toUpperCase());
+    }
 }
