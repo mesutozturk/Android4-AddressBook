@@ -2,6 +2,7 @@ package com.wissen.mesut.j6_4addressbook;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,7 +17,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wissen.mesut.j6_4addressbook.model.Kisi;
-import com.wissen.mesut.j6_4addressbook.model.MyContext;
 
 import java.util.ArrayList;
 
@@ -44,11 +44,26 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Kisi seciliKisi = MyContext.Kisiler.get(position);
+                //Kisi seciliKisi = MyContext.Kisiler.get(position);
+                ArrayAdapter<Kisi> adapter = (ArrayAdapter<Kisi>) listView.getAdapter();
+                Kisi seciliKisi = adapter.getItem(position);
                 Intent intent = new Intent(MainActivity.this, YeniActivity.class);
                 intent.putExtra("yeni", false);
-                intent.putExtra("kisi", seciliKisi);
+                intent.putExtra("kisi", seciliKisi.getId());
                 startActivity(intent);
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+                ArrayAdapter<Kisi> adapter = (ArrayAdapter<Kisi>) listView.getAdapter();
+                String id = adapter.getItem(position).getId();
+
+                database = FirebaseDatabase.getInstance();
+                myRef = database.getReference().child("kisiler").child(id);
+                myRef.removeValue();
+                dbGetir();
+                return true;
             }
         });
     }
@@ -75,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 if (gelen.size() == 0) return;
                 ArrayAdapter<Kisi> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, gelen);
                 listView.setAdapter(adapter);
+                MediaPlayer player = MediaPlayer.create(MainActivity.this, R.raw.bell);
+                player.start();
             }
 
             @Override

@@ -1,5 +1,6 @@
 package com.wissen.mesut.j6_4addressbook;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,10 +9,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.wissen.mesut.j6_4addressbook.model.Kisi;
-import com.wissen.mesut.j6_4addressbook.model.MyContext;
 
 public class YeniActivity extends AppCompatActivity {
     Kisi gelenKisi;
@@ -19,6 +23,7 @@ public class YeniActivity extends AppCompatActivity {
     Button btnEkle, btnGuncelle;
     FirebaseDatabase database;
     DatabaseReference myRef;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +45,29 @@ public class YeniActivity extends AppCompatActivity {
             btnGuncelle.setVisibility(View.VISIBLE);
             btnEkle.setVisibility(View.GONE);
 
-            gelenKisi = (Kisi) intent.getSerializableExtra("kisi");
-            doldur(gelenKisi);
+            String id = intent.getCharSequenceExtra("kisi").toString();
+            database = FirebaseDatabase.getInstance();
+            myRef = database.getReference().child("kisiler");
+            Query query = myRef.child(id);
+            showProgressDialog("Lütfen Bekleyin", "Kişi bilgisi alınıyor");
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    hideProgressDialog();
+                    gelenKisi = dataSnapshot.getValue(Kisi.class);
+                    if (gelenKisi == null)
+                        finish();
+                    doldur(gelenKisi);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            //gelenKisi = (Kisi) intent.getSerializableExtra("kisi");
+            //doldur(gelenKisi);
         }
         btnEkle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,18 +92,25 @@ public class YeniActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Kisi guncellenecekKisi = new Kisi();
-                for (int i = 0; i < MyContext.Kisiler.size(); i++) {
+                /*for (int i = 0; i < MyContext.Kisiler.size(); i++) {
                     if (MyContext.Kisiler.get(i).getId().equals(gelenKisi.getId())) {
                         guncellenecekKisi = MyContext.Kisiler.get(i);
                         break;
                     }
-                }
+                }*/
                 guncellenecekKisi.setAd(txtAd.getText().toString());
                 guncellenecekKisi.setMail(txtEmail.getText().toString());
                 guncellenecekKisi.setSoyad(txtSoyad.getText().toString());
                 guncellenecekKisi.setTelefon(txtTelefon.getText().toString());
+                guncellenecekKisi.setId(gelenKisi.getId());
+
+                database = FirebaseDatabase.getInstance();
+                myRef = database.getReference().child("kisiler");
+                myRef.child(guncellenecekKisi.getId()).setValue(guncellenecekKisi);
+
                 Toast.makeText(YeniActivity.this, "Güncellendi", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(YeniActivity.this, MainActivity.class));
+                //startActivity(new Intent(YeniActivity.this, MainActivity.class));
+                finish();
             }
         });
     }
@@ -87,5 +120,21 @@ public class YeniActivity extends AppCompatActivity {
         txtEmail.setText(gelenKisi.getMail());
         txtAd.setText(gelenKisi.getAd());
         txtSoyad.setText(gelenKisi.getSoyad());
+    }
+
+    public void showProgressDialog(String title, String message) {
+        if (dialog == null) {
+            dialog = new ProgressDialog(this);
+            dialog.setMessage(message);
+            dialog.setTitle(title);
+            dialog.setIndeterminate(true);
+        }
+        dialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 }
