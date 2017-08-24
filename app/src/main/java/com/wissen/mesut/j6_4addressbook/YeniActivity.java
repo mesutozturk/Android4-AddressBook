@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.wissen.mesut.j6_4addressbook.model.Kisi;
 import com.wissen.mesut.j6_4addressbook.model.MyContext;
 
@@ -15,6 +17,8 @@ public class YeniActivity extends AppCompatActivity {
     Kisi gelenKisi;
     EditText txtAd, txtSoyad, txtTelefon, txtEmail;
     Button btnEkle, btnGuncelle;
+    FirebaseDatabase database;
+    DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +51,24 @@ public class YeniActivity extends AppCompatActivity {
                 kisi.setMail(txtEmail.getText().toString());
                 kisi.setSoyad(txtSoyad.getText().toString());
                 kisi.setTelefon(txtTelefon.getText().toString());
-                MyContext.Kisiler.add(kisi);
+                //MyContext.Kisiler.add(kisi);
+
+                database = FirebaseDatabase.getInstance();
+                myRef = database.getReference().child("kisiler");
+                myRef.child(kisi.getId().toString()).setValue(kisi);
 
                 Toast.makeText(YeniActivity.this, "Ekledi", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(YeniActivity.this, MainActivity.class));
+                //startActivity(new Intent(YeniActivity.this, MainActivity.class));
+                finish();
             }
         });
         btnGuncelle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Kisi guncellenecekKisi=new Kisi();
+                Kisi guncellenecekKisi = new Kisi();
                 for (int i = 0; i < MyContext.Kisiler.size(); i++) {
-                    if(MyContext.Kisiler.get(i).getId().equals(gelenKisi.getId())){
-                        guncellenecekKisi=MyContext.Kisiler.get(i);
+                    if (MyContext.Kisiler.get(i).getId().equals(gelenKisi.getId())) {
+                        guncellenecekKisi = MyContext.Kisiler.get(i);
                         break;
                     }
                 }

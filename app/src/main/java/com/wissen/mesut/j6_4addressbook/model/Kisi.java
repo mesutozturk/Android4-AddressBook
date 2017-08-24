@@ -8,18 +8,19 @@ import java.util.UUID;
  */
 
 public class Kisi implements Serializable {
-    private UUID id;
+    private String id;
     private String ad, soyad, telefon, mail;
 
     public Kisi() {
-        this.id = UUID.randomUUID();
+
+        this.id = UUID.randomUUID().toString();
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -51,6 +51,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        dbGetir();
+    }
+
+    public void dbGetir() {
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference().child("kisiler");
         showProgressDialog("Lütfen Bekleyin", "Veri tabanı bağlantısı kuruluyor");
@@ -63,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
                     Kisi g = postSnapshot.getValue(Kisi.class);
                     gelen.add(g);
                 }
-                MyContext.Kisiler = gelen;
+                if (gelen.size() == 0) return;
+                ArrayAdapter<Kisi> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, gelen);
+                listView.setAdapter(adapter);
             }
 
             @Override
@@ -71,14 +82,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (MyContext.Kisiler.size() == 0) return;
-        ArrayAdapter<Kisi> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, MyContext.Kisiler);
-        listView.setAdapter(adapter);
     }
 
     public void showProgressDialog(String title, String message) {
