@@ -31,6 +31,8 @@ import com.wissen.mesut.j6_4addressbook.model.Kisi;
 
 import java.util.ArrayList;
 
+import de.cketti.mailto.EmailIntentBuilder;
+
 public class MainActivity extends AppCompatActivity {
     Button btnYeni;
     ListView listView;
@@ -105,7 +107,24 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
+                btnmail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //Intent intent = new Intent(Intent.ACTION_SEND);
+                        //intent.setType("text/plain");
+                        /*intent.setType("message/rfc822");
+                        intent.putExtra(Intent.EXTRA_EMAIL, gelen.get(pos).getMail());
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "Bu Mail AdressBook Uygulamasından");
+                        intent.putExtra(Intent.EXTRA_TEXT, "Deneme");
+                        startActivity(Intent.createChooser(intent, "Mail Gönder"));*/
+                        Kisi kisi = gelen.get(pos);
+                        EmailIntentBuilder.from(MainActivity.this)
+                                .to(kisi.getMail())
+                                .subject("Bu Mail AdressBook Uygulamasından")
+                                .body(String.format("%s %s %s", kisi.getAd(), kisi.getSoyad(), kisi.getTelefon()))
+                                .start();
+                    }
+                });
                 txtad.setText(basilacakKisi.getAd());
                 txtsoyad.setText(basilacakKisi.getSoyad());
                 return view;
