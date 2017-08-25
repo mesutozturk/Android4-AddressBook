@@ -14,8 +14,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -118,47 +116,42 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra(Intent.EXTRA_TEXT, "Deneme");
                         startActivity(Intent.createChooser(intent, "Mail Gönder"));*/
                         Kisi kisi = gelen.get(pos);
-                        EmailIntentBuilder.from(MainActivity.this)
-                                .to(kisi.getMail())
-                                .subject("Bu Mail AdressBook Uygulamasından")
-                                .body(String.format("%s %s %s", kisi.getAd(), kisi.getSoyad(), kisi.getTelefon()))
-                                .start();
+                        if (TextUtils.isEmpty(kisi.getMail())) {
+                            Toast.makeText(MainActivity.this, "E mail adresi yok", Toast.LENGTH_SHORT).show();
+                        } else {
+                            EmailIntentBuilder.from(MainActivity.this)
+                                    .to(kisi.getMail())
+                                    .subject("Bu Mail AdressBook Uygulamasından")
+                                    .body(String.format("%s %s %s", kisi.getAd(), kisi.getSoyad(), kisi.getTelefon()))
+                                    .start();
+                        }
                     }
                 });
                 txtad.setText(basilacakKisi.getAd());
                 txtsoyad.setText(basilacakKisi.getSoyad());
+                txtad.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(MainActivity.this, YeniActivity.class);
+                        intent.putExtra("yeni", false);
+                        intent.putExtra("kisi", gelen.get(pos).getId());
+                        startActivity(intent);
+                    }
+                });
+                txtad.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        database = FirebaseDatabase.getInstance();
+                        myRef = database.getReference().child("kisiler").child(gelen.get(pos).getId());
+                        myRef.removeValue();
+                        dbGetir();
+                        return true;
+                    }
+                });
                 return view;
             }
         };
         listView.setAdapter(baseAdapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(MainActivity.this, "asdmaksmd", Toast.LENGTH_SHORT).show();
-                //Kisi seciliKisi = MyContext.Kisiler.get(position);
-                ArrayAdapter<Kisi> adapter = (ArrayAdapter<Kisi>) listView.getAdapter();
-                Kisi seciliKisi = adapter.getItem(position);
-                Intent intent = new Intent(MainActivity.this, YeniActivity.class);
-                intent.putExtra("yeni", false);
-                intent.putExtra("kisi", seciliKisi.getId());
-                startActivity(intent);
-            }
-        });
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(MainActivity.this, "ffff", Toast.LENGTH_SHORT).show();
-                ArrayAdapter<Kisi> adapter = (ArrayAdapter<Kisi>) listView.getAdapter();
-                String id = adapter.getItem(position).getId();
-
-                database = FirebaseDatabase.getInstance();
-                myRef = database.getReference().child("kisiler").child(id);
-                myRef.removeValue();
-                dbGetir();
-                return true;
-            }
-        });
 
     }
 
