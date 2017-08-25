@@ -1,15 +1,25 @@
 package com.wissen.mesut.j6_4addressbook;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference myRef;
     ProgressDialog dialog;
+    BaseAdapter baseAdapter;
+    LayoutInflater layoutInflater;
+    ArrayList<Kisi> gelen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +54,68 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        layoutInflater = layoutInflater.from(this);
+
+        baseAdapter = new BaseAdapter() {
+            @Override
+            public int getCount() {
+                if (gelen == null)
+                    return 0;
+                return gelen.size();
+            }
+
+            @Override
+            public Object getItem(int i) {
+                return null;
+            }
+
+            @Override
+            public long getItemId(int i) {
+                return 0;
+            }
+
+            @Override
+            public View getView(int i, View view, ViewGroup viewGroup) {
+                if (view == null)
+                    view = layoutInflater.inflate(R.layout.mylist_item, null);
+                Kisi basilacakKisi = gelen.get(i);
+                TextView txtad = view.findViewById(R.id.viewTxtAd);
+                TextView txtsoyad = view.findViewById(R.id.viewTxtSoyad);
+                Button btnara = view.findViewById(R.id.viewBtnAra);
+                Button btnmail = view.findViewById(R.id.viewBtnMail);
+
+                final int pos = i;
+                btnara.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (TextUtils.isEmpty(gelen.get(pos).getTelefon())) {
+                            Toast.makeText(MainActivity.this, "Telefon Numarası yok", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Intent intent = new Intent(Intent.ACTION_CALL);
+                            intent.setData(Uri.parse("tel:" + gelen.get(pos).getTelefon()));
+
+                            if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                                Toast.makeText(MainActivity.this, "Yetki yok", Toast.LENGTH_SHORT).show();
+
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 100);
+                                return;
+                            }
+                            startActivity(intent);
+                        }
+                    }
+                });
+
+                txtad.setText(basilacakKisi.getAd());
+                txtsoyad.setText(basilacakKisi.getSoyad());
+                return view;
+            }
+        };
+        listView.setAdapter(baseAdapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Toast.makeText(MainActivity.this, "asdmaksmd", Toast.LENGTH_SHORT).show();
                 //Kisi seciliKisi = MyContext.Kisiler.get(position);
                 ArrayAdapter<Kisi> adapter = (ArrayAdapter<Kisi>) listView.getAdapter();
                 Kisi seciliKisi = adapter.getItem(position);
@@ -56,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Toast.makeText(MainActivity.this, "ffff", Toast.LENGTH_SHORT).show();
                 ArrayAdapter<Kisi> adapter = (ArrayAdapter<Kisi>) listView.getAdapter();
                 String id = adapter.getItem(position).getId();
 
@@ -66,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
     }
 
     @Override
@@ -82,14 +156,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 hideProgressDialog();
-                ArrayList<Kisi> gelen = new ArrayList<Kisi>();
+                gelen = new ArrayList<>();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Kisi g = postSnapshot.getValue(Kisi.class);
                     gelen.add(g);
                 }
                 if (gelen.size() == 0) return;
-                ArrayAdapter<Kisi> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, gelen);
-                listView.setAdapter(adapter);
+                /*ArrayAdapter<Kisi> adapter = new ArrayAdapter<>(MainActivity.this, R.layout.mylist_item, gelen);*/
+                baseAdapter.notifyDataSetChanged();
+
                 MediaPlayer player = MediaPlayer.create(MainActivity.this, R.raw.bell);
                 player.start();
             }

@@ -25,7 +25,7 @@ public class Kisi implements Serializable {
     }
 
     public String getAd() {
-        return ad;
+        return ad.substring(0, 1).toUpperCase() + ad.substring(1).toLowerCase();
     }
 
     public void setAd(String ad) {
@@ -33,7 +33,7 @@ public class Kisi implements Serializable {
     }
 
     public String getSoyad() {
-        return soyad;
+        return soyad.toUpperCase();
     }
 
     public void setSoyad(String soyad) {
