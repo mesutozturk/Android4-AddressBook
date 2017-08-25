@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:weightSum="1"
+    android:background="#ff0022">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="0.3"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/viewTxtAd"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Turgut"
+            android:textAlignment="viewStart"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/viewTxtSoyad"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingTop="8dp"
+            android:text="Sönmez"
+            android:textAlignment="viewStart"
+            android:textSize="28sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="0.7"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/viewBtnAra"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:drawableBottom="@android:drawable/ic_menu_call" />
+
+        <Button
+            android:id="@+id/viewBtnMail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:drawableBottom="@android:drawable/ic_dialog_email" />
+    </LinearLayout>
+</LinearLayout>
