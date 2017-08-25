@@ -91,11 +91,15 @@
         android:id="@+id/btnEkle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/ekle" />
+        android:background="@color/butonrengi"
+        android:text="@string/ekle"
+        android:textColor="@color/yazirengi" />
 
     <Button
         android:id="@+id/btnGuncelle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/guncelle" />
+        android:background="@color/butonrengi"
+        android:text="@string/guncelle"
+        android:textColor="@color/yazirengi" />
 </LinearLayout>
