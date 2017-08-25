@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Address Book</string>
+    <string name="yeni">New</string>
+    <string name="ad">Name:</string>
+    <string name="soyad">Surname:</string>
+    <string name="telefon">Telephone:</string>
+    <string name="email">E Mail:</string>
+    <string name="ekle">Add</string>
+    <string name="guncelle">Update</string>
+    <string name="msgtelefonnumarasiyok">No have phone number yet</string>
+    <string name="msgyetkiyok">No permission!</string>
+</resources>

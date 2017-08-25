@@ -90,13 +90,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         if (TextUtils.isEmpty(gelen.get(pos).getTelefon())) {
-                            Toast.makeText(MainActivity.this, "Telefon Numarası yok", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.msgtelefonnumarasiyok, Toast.LENGTH_SHORT).show();
                         } else {
                             Intent intent = new Intent(Intent.ACTION_CALL);
                             intent.setData(Uri.parse("tel:" + gelen.get(pos).getTelefon()));
 
                             if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                                Toast.makeText(MainActivity.this, "Yetki yok", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, R.string.msgyetkiyok, Toast.LENGTH_SHORT).show();
 
                                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 100);
                                 return;
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 txtad.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
+                        showProgressDialog("Lütfen Bekleyin","Siliniyor");
                         database = FirebaseDatabase.getInstance();
                         myRef = database.getReference().child("kisiler").child(gelen.get(pos).getId());
                         myRef.removeValue();
